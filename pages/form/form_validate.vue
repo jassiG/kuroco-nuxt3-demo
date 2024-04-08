@@ -1,7 +1,7 @@
 <template>
     <div>
       <section>
-        <h1>Contact</h1>
+        <h1 class="text-xl text-gray-800">Contact</h1>
         <form v-if="!validated" class="input">
           <div v-if="error" class="error">
             <p v-for="(err, idx) in error" :key="idx">
@@ -11,18 +11,18 @@
           <div>
             <dl>
               <dt>Name</dt>
-              <dd><input v-model="submitData.name" name="name" type="text" :disabled="validated"></dd>
+              <dd><input v-model="submitData.name" name="name" type="text" :disabled="validated" class="border border-slate-300 rounded"></dd>
             </dl>
             <dl>
               <dt>Email</dt>
-              <dd><input v-model="submitData.email" name="email" type="text" :disabled="validated"></dd>
+              <dd><input v-model="submitData.email" name="email" type="text" :disabled="validated" class="border border-slate-300 rounded"></dd>
             </dl>
             <dl>
               <dt>Message</dt>
-              <dd><textarea v-model="submitData.body" name="body" :disabled="validated"></textarea></dd>
+              <dd><textarea v-model="submitData.body" name="body" :disabled="validated" class="border border-slate-300 rounded"></textarea></dd>
             </dl>
           </div>
-          <button @click.prevent="handleOnValidate">Confirm your entry</button>
+          <button @click.prevent="handleOnValidate" class="bg-slate-500 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded">Confirm your entry</button>
         </form>
         <form v-if="validated" class="confirm">
           <div v-if="submitted">Inquiry submitted.</div>
@@ -76,6 +76,7 @@
       });
       submitted.value = true;
     } catch (e) {
+      this.error = e.response.data.errors;
       console.log(e);
     }
   };
