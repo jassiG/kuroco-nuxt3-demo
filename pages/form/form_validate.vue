@@ -3,7 +3,7 @@
       <section>
         <h1 class="text-xl text-gray-800">Contact</h1>
         <form v-if="!validated" class="input">
-          <div v-if="error" class="error">
+          <div v-if="error" class="text-red-500">
             <p v-for="(err, idx) in error" :key="idx">
               {{ err }}
             </p>
@@ -28,13 +28,14 @@
           <div v-if="submitted">Inquiry submitted.</div>
           <div v-else>
             <div>
-              <div>Name   :{{submitData.name}}</div>
-              <div>Email  :{{submitData.email}}</div>
-              <div>Message:{{submitData.body}}</div>
+              <div v-for="field in ['Name', 'Email', 'Body']" class="">
+                <div>{{ field }}</div>
+                <div class="text-slate-600">{{submitData[field.toLowerCase()]}}</div>
+              </div>
             </div>
-            <div>
-              <button @click.prevent="handleOnSubmit">Submit</button>
-              <button @click.prevent="validated = false">Back</button>
+            <div class="my-2 space-x-4">
+              <button @click.prevent="handleOnSubmit" class="bg-slate-500 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded">Submit</button>
+              <button @click.prevent="validated = false" class="bg-slate-500 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded">Back</button>
             </div>
           </div>
         </form>
@@ -61,7 +62,8 @@
       validated.value = true;
       error.value = null;
     } catch (e) {
-      error.value = e.response.data.errors;
+      error.value = e;
+      console.log('error', e);
     }
   };
   
@@ -73,11 +75,13 @@
         body: { ...submitData.value },
         baseURL: config.public.apiBase,
         credentials: 'include',
-      });
+      }).then((res) => {
+        console.log('res', res);
+      })
       submitted.value = true;
     } catch (e) {
-      this.error = e.response.data.errors;
-      console.log(e);
+      error.value = e;
+      console.log('error', e);
     }
   };
   </script>
