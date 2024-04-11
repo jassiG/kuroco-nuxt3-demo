@@ -1,8 +1,8 @@
 <template>
-  <div class="pagenator">
-    <button class="btn" @click="goToPage(pageNo-1)" :disabled="pageNo === 1"><</button>
-    <button v-for="page in totalPageCnt" :key="page" @click="goToPage(page)" :disabled="page === pageNo" class="btn">{{ page }}</button>
-    <button class="btn" @click="goToPage(pageNo+1)" :disabled="pageNo === totalPageCnt">></button>
+  <div class="pagenator mx-2">
+    <button class="m-1 px-1" @click="goToPage(currentPage-1)" :disabled="currentPage === 1">◀️</button>
+    <button v-for="page in totalPageCnt" :key="page" @click="goToPage(page)" :disabled="page === currentPage" :class="'m-1 px-1 ' + (page === currentPage ? 'bg-slate-200' : '')">{{ page }}</button>
+    <button class="m-1 px-1" @click="goToPage(currentPage+1)" :disabled="currentPage === totalPageCnt">▶️</button>
   </div>
 </template>
 <script setup>
@@ -11,29 +11,28 @@ const props = defineProps({
       required: true,
       type: Number,
     },
-    totalPageCnt: {
-      required: true,
-      type: Number,
-    },
+  totalPageCnt: {
+    required: true,
+    type: Number,
+  },
 });
 
 const emit = defineEmits(['pageUpdate']);
 const router = useRouter();
+const currentPage = ref(props.pageNo);
 
 const goToPage = (page) => {
-  if (page < 1 || page > props.totalPageCnt || page === props.pageNo) {
+  if (page < 1 || page > props.totalPageCnt || page === currentPage) {
     return;
   }
-  router.push({ query: { page } });
-  emit('pageUpdate', page);
+  // router.push({ query: { page } });
+  currentPage.value = page;
+  emit('pageUpdate', currentPage.value);
 };
 </script>
 <style scoped>
 .pagenator {
   display: flex;
   margin: 20px 0;
-}
-.btn {
-  margin: 0 5px;
 }
 </style>
