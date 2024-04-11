@@ -12,6 +12,13 @@
       </li>
       <li>
         <nuxt-link
+          to="/news_paginated/"
+          class="bg-slate-500 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded"
+          >News Paginated</nuxt-link
+        >
+      </li>
+      <li>
+        <nuxt-link
           to="/form/form_validate"
           class="bg-slate-500 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded"
           >Form Validate</nuxt-link
