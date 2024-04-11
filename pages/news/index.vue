@@ -14,8 +14,15 @@
 
 <script setup>
 const config = useRuntimeConfig();
-const { data: response } = await useFetch("/rcms-api/1/news", {
-  baseURL: config.public.apiBase,
-  credentials: "include",
-});
+const response = ref({});
+response.value = await fetchNews();
+
+async function fetchNews() {
+  const res = await useFetch(`/rcms-api/1/news?_lang=ja`, {
+    baseURL: config.public.apiBase,
+    credentials: "include",
+  }).then(res => res.data.value);
+  return res;
+}
+
 </script>

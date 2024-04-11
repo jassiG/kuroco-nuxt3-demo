@@ -14,28 +14,26 @@
 </template>
 
 <script setup>
-import pagenator from '~/components/pagenator.vue';
 
 const config = useRuntimeConfig();
 const route = useRoute();
-const router = useRouter();
-const page = ref(route.query.page || 1);
+const currentPage = ref(route.query.page || 1);
 
-const { data: response } = await useFetch(`/rcms-api/1/news?pageID=${page.value}`, {
-  baseURL: config.public.apiBase,
-  credentials: "include",
-});
+const response = ref({});
+response.value = await fetchNews(route.query.page || 1);
+
 
 async function updatePage(page) {
-  // page.value = page;
-  router.push({ query: { page } });
-  page.value = page;
-  // fetch new data
-  response.value = await useFetch(`/rcms-api/1/news?pageID=${page.value}`, {
+  currentPage.value = page;
+  response.value = await fetchNews(currentPage.value);
+}
+
+async function fetchNews(page) {
+  const res = await useFetch(`/rcms-api/1/news?_lang=ja&pageID=${page}`, {
     baseURL: config.public.apiBase,
     credentials: "include",
   }).then(res => res.data.value);
+  return res;
 }
-
 
 </script>
