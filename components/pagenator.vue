@@ -44,9 +44,3 @@ const goToPage = (page) => {
   emit("pageUpdate", currentPage.value);
 };
 </script>
-<style scoped>
-.pagenator {
-  display: flex;
-  margin: 20px 0;
-}
-</style>

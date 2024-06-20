@@ -20,10 +20,7 @@ const route = useRoute();
 const currentPage = ref(route.query.page || 1);
 
 const response = ref(null);
-
-onBeforeMount(() => {
-  fetchNews(route.query.page || 1);
-});
+response.value = await fetchNews(route.query.page || 1);
 
 async function updatePage(page) {
   currentPage.value = page;
@@ -35,6 +32,6 @@ async function fetchNews(page) {
     baseURL: config.public.apiBase,
     credentials: "include",
   }).then((res) => res.data.value);
-  response.value = res;
+  return res;
 }
 </script>
