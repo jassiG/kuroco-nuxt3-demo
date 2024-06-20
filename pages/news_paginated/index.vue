@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="response">
     <h1 class="text-2xl font-semibold text-gray-800">Paginated News list</h1>
     <div v-if="response" v-for="n in response.list" :key="n.topics_id" class="my-4">
       <nuxt-link
@@ -14,14 +14,15 @@
 </template>
 
 <script setup>
-
 const config = useRuntimeConfig();
 const route = useRoute();
 const currentPage = ref(route.query.page || 1);
 
-const response = ref({});
-response.value = await fetchNews(route.query.page || 1);
+const response = ref(null);
 
+onBeforeMount(() => {
+  fetchNews(route.query.page || 1);
+});
 
 async function updatePage(page) {
   currentPage.value = page;
@@ -33,7 +34,7 @@ async function fetchNews(page) {
     baseURL: config.public.apiBase,
     credentials: "include",
   }).then(res => res.data.value);
-  return res;
+  response.value = res;
 }
 
 </script>
