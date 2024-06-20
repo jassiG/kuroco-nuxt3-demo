@@ -1,9 +1,9 @@
 <template>
   <div>
     <section>
-      <h1 class="text-xl text-gray-800">Contact</h1>
-      <form v-if="!validated" class="input">
-        <div v-if="error" class="text-red-500">
+      <h1>Contact</h1>
+      <form v-if="!validated">
+        <div v-if="error">
           <p v-for="(err, idx) in error" :key="idx">
             {{ err }}
           </p>
@@ -17,7 +17,6 @@
                 name="name"
                 type="text"
                 :disabled="validated"
-                class="border border-slate-300 rounded"
               />
             </dd>
           </dl>
@@ -29,7 +28,6 @@
                 name="email"
                 type="text"
                 :disabled="validated"
-                class="border border-slate-300 rounded"
               />
             </dd>
           </dl>
@@ -40,42 +38,26 @@
                 v-model="submitData.body"
                 name="body"
                 :disabled="validated"
-                class="border border-slate-300 rounded"
               ></textarea>
             </dd>
           </dl>
         </div>
-        <button
-          @click.prevent="handleOnValidate"
-          class="bg-slate-500 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded"
-        >
-          Confirm your entry
-        </button>
+        <button @click.prevent="handleOnValidate">Confirm your entry</button>
       </form>
-      <form v-if="validated" class="confirm">
+      <form v-if="validated">
         <div v-if="submitted">Inquiry submitted.</div>
         <div v-else>
           <div>
-            <div v-for="field in ['Name', 'Email', 'Body']" class="">
+            <div v-for="field in ['Name', 'Email', 'Body']">
               <div>{{ field }}</div>
-              <div class="text-slate-600">
+              <div>
                 {{ submitData[field.toLowerCase()] }}
               </div>
             </div>
           </div>
-          <div class="my-2 space-x-4">
-            <button
-              @click.prevent="handleOnSubmit"
-              class="bg-slate-500 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded"
-            >
-              Submit
-            </button>
-            <button
-              @click.prevent="validated = false"
-              class="bg-slate-500 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded"
-            >
-              Back
-            </button>
+          <div>
+            <button @click.prevent="handleOnSubmit">Submit</button>
+            <button @click.prevent="validated = false">Back</button>
           </div>
         </div>
       </form>

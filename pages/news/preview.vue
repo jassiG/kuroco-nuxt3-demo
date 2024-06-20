@@ -1,12 +1,12 @@
 <template>
   <ClientOnly>
     <div>
-      <h1 class="title">{{ response.details.subject }}</h1>
-      <div class="post" v-html="response.details.contents"></div>
+      <h1>{{ response.details.subject }}</h1>
+      <div v-html="response.details.contents"></div>
     </div>
   </ClientOnly>
 </template>
-  
+
 <script setup>
 const config = useRuntimeConfig();
 
@@ -16,7 +16,7 @@ const preview_token = route.query.preview_token;
 const { data: response } = await useFetch(
   `${config.public.apiBase}/rcms-api/1/preview`,
   {
-    credentials: 'include',
+    credentials: "include",
     params: {
       preview_token,
     },

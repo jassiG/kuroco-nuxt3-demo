@@ -1,11 +1,8 @@
 <template>
   <div>
-    <h1 class="text-2xl font-semibold text-gray-800">News list</h1>
-    <div v-for="n in response.list" :key="n.topics_id" class="my-4">
-      <nuxt-link
-        :to="`/news/${n.topics_id}`"
-        class="bg-slate-500 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded"
-      >
+    <h1>News list</h1>
+    <div v-for="n in response.list" :key="n.topics_id">
+      <nuxt-link :to="`/news/${n.topics_id}`">
         {{ n.ymd }} {{ n.subject }}
       </nuxt-link>
     </div>
@@ -21,8 +18,7 @@ async function fetchNews() {
   const res = await useFetch(`/rcms-api/1/news?_lang=ja`, {
     baseURL: config.public.apiBase,
     credentials: "include",
-  }).then(res => res.data.value);
+  }).then((res) => res.data.value);
   return res;
 }
-
 </script>

@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h1 class="title text-lg font-semibold text-gray-800">
+    <h1>
       {{ response.details.subject }}
     </h1>
-    <div class="post" v-html="response.details.contents"></div>
+    <div v-html="response.details.contents"></div>
   </div>
 </template>
 
