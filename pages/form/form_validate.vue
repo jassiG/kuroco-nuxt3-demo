@@ -3,7 +3,7 @@
     <section>
       <h1>Contact</h1>
       <form v-if="!validated">
-        <div v-if="error">
+        <div v-if="error" class="text-red-500">
           <p v-for="(err, idx) in error" :key="idx">
             {{ err }}
           </p>
@@ -74,33 +74,33 @@ const config = useRuntimeConfig();
 
 const handleOnValidate = async () => {
   //Validate the entry
-  try {
-    await $fetch("/rcms-api/1/form_validate", {
-      method: "POST",
-      body: { ...submitData.value },
-      baseURL: config.public.apiBase,
-      credentials: "include",
-    });
+  const res = await useFetch("/rcms-api/1/form_validate", {
+    method: "POST",
+    body: { ...submitData.value },
+    baseURL: config.public.apiBase,
+    credentials: "include",
+  });
+  if (res.status.value == "error") {
+    error.value = res.error.value.data.errors.map(item => item['message']);
+  } else {
     validated.value = true;
     error.value = null;
-  } catch (e) {
-    error.value = e;
   }
 };
 
 const handleOnSubmit = async () => {
   //Post processing to Kuroco endpoints
-  try {
-    await $fetch("/rcms-api/1/form_send", {
-      method: "POST",
-      body: { ...submitData.value },
-      baseURL: config.public.apiBase,
-      credentials: "include",
-    });
+  const res = await useFetch("/rcms-api/1/form_send", {
+    method: "POST",
+    body: { ...submitData.value },
+    baseURL: config.public.apiBase,
+    credentials: "include",
+  });
+  if (res.status.value == "error") {
+    error.value = res.error.value.data.errors.map(item => item['message']);
+  } else {
     submitted.value = true;
-  } catch (e) {
-    error.value = e;
-    console.log(e);
+    error.value = null;
   }
 };
 </script>
