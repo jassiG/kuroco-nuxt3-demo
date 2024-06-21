@@ -54,17 +54,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["pageUpdate"]);
-const router = useRouter();
-const currentPage = ref(props.pageNo);
 
-const goToPage = (page) => {
-  if (page < 1 || page > props.totalPageCnt || page === currentPage) {
-    return;
-  }
-  // router.push({ query: { page } });
-  currentPage.value = page;
-  emit("pageUpdate", currentPage.value);
-};
 const refresh = (i) => {
   emit("pageUpdate", i);
 };
