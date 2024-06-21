@@ -100,6 +100,7 @@ const handleOnSubmit = async () => {
     submitted.value = true;
   } catch (e) {
     error.value = e;
+    console.log(e);
   }
 };
 </script>
