@@ -44,3 +44,16 @@ const goToPage = (page) => {
   emit("pageUpdate", currentPage.value);
 };
 </script>
+<style scoped>
+ul {
+  list-style: none;
+  display: flex;
+}
+
+.disabled {
+  pointer-events: none;
+  cursor: default;
+  text-decoration: none;
+  color: black;
+}
+</style>
