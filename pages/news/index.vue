@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="response">
     <h1>News list</h1>
     <div v-for="n in response.list" :key="n.topics_id">
       <nuxt-link :to="`/news/${n.topics_id}`">
@@ -11,7 +11,7 @@
 
 <script setup>
 const config = useRuntimeConfig();
-const response = ref({});
+const response = ref(null);
 response.value = await fetchNews();
 
 async function fetchNews() {

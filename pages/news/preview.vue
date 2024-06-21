@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <div>
+    <div v-if="response">
       <h1>{{ response.details.subject }}</h1>
       <div v-html="response.details.contents"></div>
     </div>
