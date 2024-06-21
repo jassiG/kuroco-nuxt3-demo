@@ -59,7 +59,7 @@ const refresh = (i) => {
   emit("pageUpdate", i);
 };
 </script>
-<style>
+<style scoped>
 ul {
   list-style: none;
   display: flex;
@@ -71,4 +71,3 @@ ul {
   text-decoration: none;
   color: black;
 }
-</style>
