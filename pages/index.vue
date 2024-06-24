@@ -15,6 +15,9 @@
       <li>
         <nuxt-link to="/subscribe_with_login">Subscribe with login</nuxt-link>
       </li>
+      <li>
+        <nuxt-link to="/subscribe_with_key">Subscribe with key</nuxt-link>
+      </li>
     </ul>
   </div>
 </template>
