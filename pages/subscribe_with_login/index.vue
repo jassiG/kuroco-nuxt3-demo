@@ -1,78 +1,89 @@
 <template>
   <div>
-    <form>
-      <h1>Subscribe to Magazine</h1>
-      <p v-if="resultMessage !== null">
-        {{ resultMessage }}
-      </p>
-      <form @submit.prevent="login">
-        <input v-model="email" name="email" type="email" placeholder="email" />
-        <input
-          v-model="password"
-          name="password"
-          type="password"
-          placeholder="password"
-        />
-        <button type="submit">Login</button>
-      </form>
-      <button v-on:click.prevent="subscribeSubmit">Subscribe</button>
-      <button v-on:click.prevent="unsubscribeSubmit">Unsubscribe</button>
+    <h1>Subscribe to Magazine</h1>
+    <p v-if="resultMessage !== null">
+      {{ resultMessage }}
+    </p>
+    <form @submit.prevent="login">
+      <input v-model="email" name="email" type="email" placeholder="email" />
+      <input
+        v-model="password"
+        name="password"
+        type="password"
+        placeholder="password"
+      />
+      <button type="submit">Login</button>
     </form>
+    <button v-on:click.prevent="subscribeSubmit">Subscribe</button>
+    <button v-on:click.prevent="unsubscribeSubmit">Unsubscribe</button>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      email: "",
-      password: "",
-      resultMessage: null,
+<script setup>
+const config = useRuntimeConfig();
+const email = ref("");
+const password = ref("");
+const resultMessage = ref(null);
+const currentUser = ref({});
+
+//Login
+const login = async () => {
+  try {
+    const payload = {
+      email: email.value,
+      password: password.value,
     };
-  },
-  methods: {
-    //Login
-    async login() {
-      try {
-        const payload = {
-          email: this.email,
-          password: this.password,
-        };
-        await this.$axios.$post("/rcms-api/1/login", payload);
-        this.resultMessage = "Successful login";
-      } catch (error) {
-        this.resultMessage = error.response.data.errors[0].message;
-      }
-    },
-    //Subscribe
-    async subscribeSubmit() {
-      try {
-        const payload = {
-          email: this.email,
-        };
-        // post data
-        const response = await this.$axios.$post(
-          `/rcms-api/1/magazine_subscribe/1`,
-          payload
-        );
-        this.resultMessage = response.messages[0];
-      } catch (error) {
-        this.resultMessage = error.response.data.errors[0].message;
-      }
-    },
-    //Unsubscribe
-    async unsubscribeSubmit() {
-      try {
-        // post data
-        const response = await this.$axios.$post(
-          `/rcms-api/1/magazine_unsubscribe/1`,
-          {}
-        );
-        this.resultMessage = response.messages[0];
-      } catch (error) {
-        this.resultMessage = error.response.data.errors[0].message;
-      }
-    },
-  },
+    const response = await $fetch("/rcms-api/1/login", {
+      method: "POST",
+      baseURL: config.public.apiBase,
+      body: payload,
+    });
+    console.log(response, "in login");
+    currentUser.value = {
+      member_id: response.member_id,
+    };
+    resultMessage.value = "Successful login";
+  } catch (error) {
+    console.log(error.response._data, "in login");
+    resultMessage.value = error.response._data.errors[0].message;
+  }
+};
+//Subscribe
+const subscribeSubmit = async () => {
+  try {
+    const payload = {
+      member_id: currentUser.value.member_id,
+    };
+    // post data
+    const response = await $fetch(`/rcms-api/1/magazine_subscribe/1`, {
+      method: "POST",
+      baseURL: config.public.apiBase,
+      credentials: "include",
+      body: payload,
+    });
+    resultMessage.value = response.messages[0];
+  } catch (error) {
+    console.log(error.response._data, "in subscribeSubmit");
+    resultMessage.value = error.response._data.errors[0].message;
+  }
+};
+//Unsubscribe
+const unsubscribeSubmit = async () => {
+  try {
+    const payload = {
+      member_id: currentUser.value.member_id,
+    }
+    // post data
+    const response = await $fetch(`/rcms-api/1/magazine_unsubscribe/1`, {
+      method: "POST",
+      baseURL: config.public.apiBase,
+      credentials: "include",
+      body: payload,
+    });
+    resultMessage.value = response.messages[0];
+  } catch (error) {
+    console.log(error.response._data, "in unsubscribeSubmit");
+    resultMessage.value = error.response._data.errors[0].message;
+  }
 };
 </script>
