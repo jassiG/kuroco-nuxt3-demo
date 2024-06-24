@@ -14,6 +14,9 @@
         <li>
           {{ comment.note }} by {{ comment.name }}
           <button
+            v-if="
+              commentHistory.map(({ id }) => id).includes(comment.comment_id)
+            "
             type="button"
             @click="() => deleteComment(comment.comment_id)"
           >
@@ -35,6 +38,8 @@
 </template>
 
 <script setup>
+const COMMENT_HISTORY_KEY = "CommentHistory";
+
 const config = useRuntimeConfig();
 
 const userName = ref("");
@@ -42,6 +47,7 @@ const response = ref(null);
 const comments = ref([]);
 const inputComment = ref("");
 const resultMessage = ref(null);
+const commentHistory = ref([]);
 
 const getAllComments = async (topics_id) => {
   const { list } = await $fetch(
@@ -67,8 +73,11 @@ const getData = async () => {
   }
 };
 
+await getData();
+
 const submitComment = async () => {
-  await $fetch("/rcms-api/1/comment", {
+  const delkey = `${userName.value}_${Date.now()}`;
+  const submitResponse = await $fetch("/rcms-api/1/comment", {
     method: "POST",
     baseURL: config.public.apiBase,
     credentials: "include",
@@ -76,8 +85,10 @@ const submitComment = async () => {
       module_id: response.value.details.topics_id,
       name: userName.value,
       note: inputComment.value,
+      delkey,
     },
   });
+  addCommentHistory({ id: submitResponse.id, delkey });
   comments.value = await getAllComments(response.value.details.topics_id);
   inputComment.value = "";
 };
@@ -88,7 +99,13 @@ const deleteComment = async (commentId) => {
       method: "POST",
       baseURL: config.public.apiBase,
       credentials: "include",
+      body: {
+        delkey: commentHistory.value.find(
+          ({ id }) => `${id}` === `${commentId}`
+        ).delkey,
+      },
     });
+    deleteCommentHistory(commentId);
     comments.value = await getAllComments(response.value.details.topics_id);
     inputComment.value = "";
   } catch (error) {
@@ -96,7 +113,22 @@ const deleteComment = async (commentId) => {
   }
 };
 
+const addCommentHistory = (payload) => {
+  const restored = JSON.parse(localStorage.getItem(COMMENT_HISTORY_KEY)) || [];
+  restored.push(payload);
+  localStorage.setItem(COMMENT_HISTORY_KEY, JSON.stringify(restored));
+  commentHistory.value = restored;
+};
+
+const deleteCommentHistory = (commentId) => {
+  const restored = JSON.parse(localStorage.getItem(COMMENT_HISTORY_KEY)) || [];
+  const filtered = restored.filter(({ id }) => `${id}` !== `${commentId}`);
+  localStorage.setItem(COMMENT_HISTORY_KEY, JSON.stringify(filtered));
+  commentHistory.value = filtered;
+};
+
 onMounted(() => {
-  getData();
+  commentHistory.value =
+    JSON.parse(localStorage.getItem(COMMENT_HISTORY_KEY)) || [];
 });
 </script>
