@@ -7,7 +7,7 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  modules: ["nuxt-auth-utils"],
+  modules: [],
   runtimeConfig: {
     // Public keys that are exposed to the client
     public: {
