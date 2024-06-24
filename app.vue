@@ -4,7 +4,7 @@
   </div>
 </template>
 <style>
-a {
+/* a {
   color: #007bff;
   text-decoration: underline;
 }
@@ -13,5 +13,5 @@ input {
 }
 textarea {
   border: 1px solid #ced4da;
-}
+} */
 </style>

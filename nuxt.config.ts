@@ -7,7 +7,7 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["nuxt-auth-utils"],
   runtimeConfig: {
     // Public keys that are exposed to the client
     public: {
