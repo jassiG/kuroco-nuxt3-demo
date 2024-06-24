@@ -38,13 +38,11 @@ const login = async () => {
       baseURL: config.public.apiBase,
       body: payload,
     });
-    console.log(response, "in login");
     currentUser.value = {
       member_id: response.member_id,
     };
     resultMessage.value = "Successful login";
   } catch (error) {
-    console.log(error.response._data, "in login");
     resultMessage.value = error.response._data.errors[0].message;
   }
 };
@@ -63,7 +61,6 @@ const subscribeSubmit = async () => {
     });
     resultMessage.value = response.messages[0];
   } catch (error) {
-    console.log(error.response._data, "in subscribeSubmit");
     resultMessage.value = error.response._data.errors[0].message;
   }
 };
@@ -82,7 +79,6 @@ const unsubscribeSubmit = async () => {
     });
     resultMessage.value = response.messages[0];
   } catch (error) {
-    console.log(error.response._data, "in unsubscribeSubmit");
     resultMessage.value = error.response._data.errors[0].message;
   }
 };
