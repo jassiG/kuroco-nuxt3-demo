@@ -10,7 +10,6 @@
 <script setup>
 const config = useRuntimeConfig();
 const route = useRoute();
-const error = ref(null);
 const resultMessage = ref(null);
 
 function validate({ query }) {
@@ -19,7 +18,11 @@ function validate({ query }) {
 
 onMounted(() => {
   console.log("unsubscribeSubmit");
-  unsubscribeSubmit();
+  if (validate(route.query)) {
+    unsubscribeSubmit();
+  } else {
+    resultMessage.value = "Invalid Unsubscribe key";
+  }
 });
 
 async function unsubscribeSubmit() {
