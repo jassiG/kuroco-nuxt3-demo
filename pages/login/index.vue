@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="login">
-    <p v-if="loginStatus !== null">
+    <p v-if="loginStatus !== null" :style="{ color: resultMessageColor }">
       {{ resultMessage }}
     </p>
 
