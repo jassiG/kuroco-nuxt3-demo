@@ -13,12 +13,12 @@ const route = useRoute();
 const resultMessage = ref(null);
 
 function validate({ query }) {
+  console.log(query);
   return /[!-~]{32}/.test(query.key);
 }
 
 onMounted(() => {
-  console.log("unsubscribeSubmit");
-  if (validate(route.query)) {
+  if (validate(route)) {
     unsubscribeSubmit();
   } else {
     resultMessage.value = "Invalid Unsubscribe key";
