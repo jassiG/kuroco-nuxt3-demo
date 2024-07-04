@@ -65,7 +65,6 @@ const error = ref(null);
 const response = ref(null);
 
 const getData = async () => {
-  console.log("getData");
   try {
     response.value = await $fetch("/rcms-api/18/member/details", {
       baseURL: config.public.apiBase,
@@ -76,7 +75,8 @@ const getData = async () => {
     user.value.email = response.value.details.email;
     user.value.email_send_ng_flg = response.value.details.email_send_ng_flg;
   } catch (e) {
-    console.log(e);
+    // console.log(e);\
+    error.value = e.response._data.errors[0].message;
   }
 };
 
@@ -92,7 +92,7 @@ const handleOnSubmit = async () => {
     });
     updateProfileDone.value = true;
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     error.value = e.response._data.errors[0].message;
   }
 };
