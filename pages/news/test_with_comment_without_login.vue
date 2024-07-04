@@ -109,7 +109,7 @@ const deleteComment = async (commentId) => {
     comments.value = await getAllComments(response.value.details.topics_id);
     inputComment.value = "";
   } catch (error) {
-    resultMessage.value = error.response.data.errors[0].message;
+    resultMessage.value = error.response._data.errors[0].message;
   }
 };
 

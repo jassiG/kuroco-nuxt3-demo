@@ -43,7 +43,7 @@ const deleteProfile = async () => {
     });
     deleteDone.value = true;
   } catch (e) {
-    error.value = e.response.data.errors[0].message;
+    error.value = e.response._data.errors[0].message;
   }
 };
 
