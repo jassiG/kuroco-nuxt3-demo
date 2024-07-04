@@ -23,7 +23,6 @@ const response = ref(null);
 const getResponse = async () => {
   try {
     const res = await $fetch("/rcms-api/18/member/details", {
-      method: "GET",
       baseURL: config.public.apiBase,
       credentials: "include",
     });

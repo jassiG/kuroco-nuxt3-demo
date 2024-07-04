@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section v-if="response">
     <h1 class="title">My Profile</h1>
 
     <div v-if="updateProfileDone">
@@ -47,42 +47,55 @@
   </section>
 </template>
 
-<script>
-export default {
+<script setup>
+definePageMeta({
   middleware: "auth",
-  data() {
-    return {
-      updateProfileDone: false,
-      user: {
-        name1: "",
-        name2: "",
-        email: "",
-        email_send_ng_flg: "",
-      },
-      error: null,
-    };
-  },
-  async asyncData({ $axios }) {
-    return {
-      response: await $axios.$get(`/rcms-api/18/member/details`),
-    };
-  },
-  created() {
-    this.user.name1 = this.response.details.name1;
-    this.user.name2 = this.response.details.name2;
-    this.user.email = this.response.details.email;
-    this.user.email_send_ng_flg = this.response.details.email_send_ng_flg;
-  },
-  methods: {
-    async handleOnSubmit() {
-      try {
-        await this.$axios.$post("/rcms-api/18/member/update", { ...this.user });
-        this.updateProfileDone = true;
-      } catch (e) {
-        console.error(e);
-        this.error = e.response.data.errors[0].message;
-      }
-    },
-  },
+});
+
+const config = useRuntimeConfig();
+
+const updateProfileDone = ref(false);
+const user = ref({
+  name1: "",
+  name2: "",
+  email: "",
+  email_send_ng_flg: "",
+});
+const error = ref(null);
+const response = ref(null);
+
+const getData = async () => {
+  console.log("getData");
+  try {
+    response.value = await $fetch("/rcms-api/18/member/details", {
+      baseURL: config.public.apiBase,
+      credentials: "include",
+    });
+    user.value.name1 = response.value.details.name1;
+    user.value.name2 = response.value.details.name2;
+    user.value.email = response.value.details.email;
+    user.value.email_send_ng_flg = response.value.details.email_send_ng_flg;
+  } catch (e) {
+    console.log(e);
+  }
 };
+
+const handleOnSubmit = async () => {
+  try {
+    await $fetch("/rcms-api/18/member/update", {
+      method: "POST",
+      baseURL: config.public.apiBase,
+      credentials: "include",
+      body: {
+        ...user.value,
+      },
+    });
+    updateProfileDone.value = true;
+  } catch (e) {
+    console.log(e);
+    error.value = e.response._data.errors[0].message;
+  }
+};
+
+await getData();
 </script>
