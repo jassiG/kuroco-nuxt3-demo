@@ -66,7 +66,7 @@ const signup = async () => {
     await $fetch("/rcms-api/33/member_invite", {
       method: "POST",
       credentials: "include",
-      baseUrl: config.public.apiBase,
+      baseURL: config.public.apiBase,
       body: payload,
     });
     presignupDone.value = true;
