@@ -62,7 +62,6 @@ const signup = async () => {
       },
     };
     // post data
-    console.log(config.public.apiBase);
     await $fetch("/rcms-api/33/member_invite", {
       method: "POST",
       credentials: "include",
@@ -71,7 +70,6 @@ const signup = async () => {
     });
     presignupDone.value = true;
   } catch (e) {
-    console.log(e.response._data);
     error.value = e.response._data.errors;
   }
 };
