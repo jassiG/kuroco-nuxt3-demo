@@ -32,7 +32,6 @@ const response = ref(null);
 const comments = ref([]);
 const inputComment = ref("");
 const resultMessage = ref(null);
-const commentHistory = ref([]);
 const profile = ref(null);
 
 const getAllComments = async (topics_id) => {
@@ -57,6 +56,9 @@ const getData = async () => {
       credentials: "include",
     });
     profile.value = profileResponse;
+    if (!profile.value.member_id) {
+      resultMessage.value = "Please login to comment";
+    }
     const allComments = await getAllComments(apiResponse.details.topics_id);
     comments.value = allComments;
   } catch (e) {
@@ -97,8 +99,4 @@ const deleteComment = async (commentId) => {
   }
 };
 
-onMounted(() => {
-  commentHistory.value =
-    JSON.parse(localStorage.getItem(COMMENT_HISTORY_KEY)) || [];
-});
 </script>
