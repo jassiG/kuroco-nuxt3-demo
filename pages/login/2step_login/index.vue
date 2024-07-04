@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p v-if="Status !== null">
+    <p v-if="Status !== null" :style="{ color: resultMessageColor() }">
       {{ resultMessage }}
     </p>
     <form v-if="preloginStatus === false" @submit.prevent="login">
@@ -28,79 +28,78 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      email: "",
-      password: "",
-      onetime_password: "",
-      Status: null,
-      preloginStatus: false,
-      resultMessage: null,
+<script setup>
+const config = useRuntimeConfig();
+
+const email = ref("");
+const password = ref("");
+const onetime_password = ref("");
+const Status = ref(null);
+const preloginStatus = ref(false);
+const resultMessage = ref(null);
+
+const resultMessageColor = () => {
+  switch (Status.value) {
+    case "success":
+      return "green";
+    case "failure":
+      return "red";
+    default:
+      return "";
+  }
+};
+
+const login = async () => {
+  try {
+    const payload = {
+      email: email.value,
+      password: password.value,
     };
-  },
-  computed: {
-    resultMessageColor() {
-      switch (this.Status) {
-        case "success":
-          return "green";
-        case "failure":
-          return "red";
-        default:
-          return "";
-      }
-    },
-  },
-  methods: {
-    async login() {
-      try {
-        const payload = {
-          email: this.email,
-          password: this.password,
-        };
-        const response = await this.$axios.$post(
-          "/rcms-api/1/2steplogin/email",
-          payload
-        );
-        this.Status = "success";
-        if (response.status === 3) {
-          this.preloginStatus = true;
-          this.resultMessage = response.messages;
-        }
-        if (response.status === 0) {
-          this.resultMessage =
-            "Login succeeded. Please register the second factor authentication information.";
-        }
-      } catch (error) {
-        this.Status = "failure";
-        this.resultMessage = error.response.data.errors[0].message;
-      }
-    },
-    async second_authentication() {
-      try {
-        const payload = {
-          email: this.email,
-          onetime_password: this.onetime_password,
-        };
-        const response = await this.$axios.$post(
-          "/rcms-api/1/2steplogin/email",
-          payload
-        );
-        this.Status = "success";
-        if (response.status === 3) {
-          this.preloginStatus = true;
-          this.resultMessage = response.messages;
-        }
-        if (response.status === 0) {
-          this.resultMessage = "Login succeeded.";
-        }
-      } catch (error) {
-        this.preloginStatus = false;
-        this.Status = "failure";
-        this.resultMessage = error.response.data.errors[0].message;
-      }
-    },
-  },
+    const response = await $fetch("/rcms-api/1/2steplogin/email", {
+      method: "POST",
+      baseURL: config.public.apiBase,
+      credentials: "include",
+      body: payload,
+    });
+    Status.value = "success";
+    if (response.status === 3) {
+      preloginStatus.value = true;
+      resultMessage.value = response.messages;
+    }
+    if (response.status === 0) {
+      resultMessage.value =
+        "Login succeeded. Please register the second factor authentication information.";
+    }
+  } catch (error) {
+    Status.value = "failure";
+    resultMessage.value = error.response._data.errors[0].message;
+  }
+};
+
+const second_authentication = async () => {
+  try {
+    const payload = {
+      email: email.value,
+      onetime_password: onetime_password.value,
+    };
+    const response = await $fetch("/rcms-api/1/2steplogin/email", {
+      method: "POST",
+      baseURL: config.public.apiBase,
+      credentials: "include",
+      body: payload,
+    });
+    Status.value = "success";
+    if (response.status === 3) {
+      preloginStatus.value = true;
+      resultMessage.value = response.messages;
+    }
+    if (response.status === 0) {
+      resultMessage.value = "Login succeeded.";
+    }
+  } catch (error) {
+    preloginStatus.value = false;
+    Status.value = "failure";
+    resultMessage.value = error.response._data.errors[0].message;
+  }
 };
 </script>
