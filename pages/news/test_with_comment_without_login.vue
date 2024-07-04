@@ -2,14 +2,21 @@
   <div v-if="response">
     <h1 class="title">{{ response.details.subject }}</h1>
     <div class="post" v-html="response.details.contents"></div>
+    <p v-if="resultMessage !== null">
+      {{ resultMessage }}
+    </p>
     <div>
-      <p v-if="resultMessage !== null">
-        {{ resultMessage }}
-      </p>
+      please type your name:
+      <input v-model="userName" type="text" placeholder="your name" />
+    </div>
+    <div>
       <ul v-for="comment in comments" :key="comment.comment_id">
         <li>
           {{ comment.note }} by {{ comment.name }}
           <button
+            v-if="
+              commentHistory.map(({ id }) => id).includes(comment.comment_id)
+            "
             type="button"
             @click="() => deleteComment(comment.comment_id)"
           >
@@ -19,20 +26,28 @@
       </ul>
       <form @submit.prevent="submitComment">
         <input v-model="inputComment" type="text" placeholder="comment" />
-        <button type="submit" :disabled="inputComment === ''">submit</button>
+        <button
+          type="submit"
+          :disabled="inputComment === '' || userName === ''"
+        >
+          submit
+        </button>
       </form>
     </div>
   </div>
 </template>
 
 <script setup>
+const COMMENT_HISTORY_KEY = "CommentHistory";
+
 const config = useRuntimeConfig();
 
+const userName = ref("");
 const response = ref(null);
 const comments = ref([]);
 const inputComment = ref("");
 const resultMessage = ref(null);
-const profile = ref(null);
+const commentHistory = ref([]);
 
 const getAllComments = async (topics_id) => {
   const { list } = await $fetch(
@@ -51,14 +66,6 @@ const getData = async () => {
       credentials: "include",
     });
     response.value = apiResponse;
-    const profileResponse = await $fetch("/rcms-api/1/profile", {
-      baseURL: config.public.apiBase,
-      credentials: "include",
-    });
-    profile.value = profileResponse;
-    if (!profile.value.member_id) {
-      resultMessage.value = "Please login to comment";
-    }
     const allComments = await getAllComments(apiResponse.details.topics_id);
     comments.value = allComments;
   } catch (e) {
@@ -69,17 +76,19 @@ const getData = async () => {
 await getData();
 
 const submitComment = async () => {
+  const delkey = `${userName.value}_${Date.now()}`;
   const submitResponse = await $fetch("/rcms-api/1/comment", {
     method: "POST",
     baseURL: config.public.apiBase,
     credentials: "include",
     body: {
       module_id: response.value.details.topics_id,
-      name: `${profile.value.name1} ${profile.value.name2}`,
-      mail: profile.value.email,
+      name: userName.value,
       note: inputComment.value,
+      delkey,
     },
   });
+  addCommentHistory({ id: submitResponse.id, delkey });
   comments.value = await getAllComments(response.value.details.topics_id);
   inputComment.value = "";
 };
@@ -90,13 +99,36 @@ const deleteComment = async (commentId) => {
       method: "POST",
       baseURL: config.public.apiBase,
       credentials: "include",
-      body: {},
+      body: {
+        delkey: commentHistory.value.find(
+          ({ id }) => `${id}` === `${commentId}`
+        ).delkey,
+      },
     });
+    deleteCommentHistory(commentId);
     comments.value = await getAllComments(response.value.details.topics_id);
     inputComment.value = "";
   } catch (error) {
-    resultMessage.value = error.response._data.errors[0].message;
+    resultMessage.value = error.response.data.errors[0].message;
   }
 };
 
+const addCommentHistory = (payload) => {
+  const restored = JSON.parse(localStorage.getItem(COMMENT_HISTORY_KEY)) || [];
+  restored.push(payload);
+  localStorage.setItem(COMMENT_HISTORY_KEY, JSON.stringify(restored));
+  commentHistory.value = restored;
+};
+
+const deleteCommentHistory = (commentId) => {
+  const restored = JSON.parse(localStorage.getItem(COMMENT_HISTORY_KEY)) || [];
+  const filtered = restored.filter(({ id }) => `${id}` !== `${commentId}`);
+  localStorage.setItem(COMMENT_HISTORY_KEY, JSON.stringify(filtered));
+  commentHistory.value = filtered;
+};
+
+onMounted(() => {
+  commentHistory.value =
+    JSON.parse(localStorage.getItem(COMMENT_HISTORY_KEY)) || [];
+});
 </script>
