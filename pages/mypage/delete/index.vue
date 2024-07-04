@@ -1,5 +1,5 @@
 <template>
-  <div class="l-container--wrap">
+  <div v-if="response" class="l-container--wrap">
     <div v-if="!deleteDone">
       Delete
       <span style="font-weight: bold"
@@ -12,30 +12,40 @@
   </div>
 </template>
 
-<script>
-export default {
+<script setup>
+definePageMeta({
   middleware: "auth",
-  data() {
-    return {
-      deleteDone: false,
-      error: null,
-    };
-  },
-  async asyncData({ $axios }) {
-    return {
-      response: await $axios.$get(`/rcms-api/18/member/details`),
-    };
-  },
-  methods: {
-    async deleteProfile() {
-      try {
-        await this.$axios.$post("/rcms-api/18/member/delete", {});
-        this.deleteDone = true;
-      } catch (e) {
-        console.error(e);
-        this.error = e.response.data.errors[0].message;
-      }
-    },
-  },
+});
+
+const config = useRuntimeConfig();
+
+const response = ref(null);
+const deleteDone = ref(false);
+const error = ref(null);
+
+const getData = async () => {
+  try {
+    response.value = await $fetch("/rcms-api/18/member/details", {
+      baseURL: config.public.apiBase,
+      credentials: "include",
+    });
+  } catch (e) {
+    error.value = e.response._data.errors[0].message;
+  }
 };
+
+const deleteProfile = async () => {
+  try {
+    await this.$axios.$post("/rcms-api/18/member/delete", {
+      baseURL: config.public.apiBase,
+      credentials: "include",
+      body: {},
+    });
+    deleteDone.value = true;
+  } catch (e) {
+    error.value = e.response.data.errors[0].message;
+  }
+};
+
+getData();
 </script>

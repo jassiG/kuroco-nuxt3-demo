@@ -75,7 +75,7 @@ const getData = async () => {
     user.value.email = response.value.details.email;
     user.value.email_send_ng_flg = response.value.details.email_send_ng_flg;
   } catch (e) {
-    // console.log(e);\
+    // console.log(e);
     error.value = e.response._data.errors[0].message;
   }
 };
