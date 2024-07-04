@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section v-if="response">
     <h1 class="title">My Profile</h1>
     <article>
       Name: {{ response.details.name1 }} {{ response.details.name2 }}
@@ -13,13 +13,25 @@
   </section>
 </template>
 
-<script>
-export default {
+<script setup>
+definePageMeta({
   middleware: "auth",
-  async asyncData({ $axios }) {
-    return {
-      response: await $axios.$get(`/rcms-api/18/member/details`),
-    };
-  },
+});
+const config = useRuntimeConfig();
+const response = ref(null);
+
+const getResponse = async () => {
+  try {
+    const res = await $fetch("/rcms-api/18/member/details", {
+      method: "GET",
+      baseURL: config.public.apiBase,
+      credentials: "include",
+    });
+    response.value = res;
+  } catch (e) {
+    // console.log(e);
+  }
 };
+
+await getResponse();
 </script>
