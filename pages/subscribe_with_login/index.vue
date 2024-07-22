@@ -51,6 +51,7 @@ const subscribeSubmit = async () => {
   try {
     if (!currentUser.value.member_id) {
       resultMessage.value = "Please Login";
+      password.value = "";
     } else {
       const payload = {
         member_id: currentUser.value.member_id,
