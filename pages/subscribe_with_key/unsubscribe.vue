@@ -22,6 +22,11 @@ onMounted(() => {
     unsubscribeSubmit();
   } else {
     resultMessage.value = "Invalid Unsubscribe key";
+    throw createError({
+      statusCode: 404,
+      message: "Invalid Unsubscribe key",
+      fatal: true
+    })
   }
 });
 
