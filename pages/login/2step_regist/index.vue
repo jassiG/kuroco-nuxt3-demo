@@ -30,6 +30,16 @@ const validate = ({ query }) => {
   return /[!-~]{32}/.test(query.key);
 };
 
+onMounted(() => {
+  if (!validate(route)) {
+    throw createError({
+      statusCode: 404,
+      message: "Invalid Registration Key",
+      fatal: false
+    })
+  }
+});
+
 const sendOTP = async () => {
   try {
     const payload = {
