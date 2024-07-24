@@ -36,7 +36,7 @@ const getData = async () => {
 
 const deleteProfile = async () => {
   try {
-    await this.$axios.$post("/rcms-api/18/member/delete", {
+    await $fetch("/rcms-api/18/member/delete", {
       baseURL: config.public.apiBase,
       credentials: "include",
       body: {},
