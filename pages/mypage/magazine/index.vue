@@ -23,13 +23,16 @@
           v-model="submitData[magazine.key]"
           @change="handleChange(magazine.key)"
         />
-        <label :for="`u-${magazine.id}`">Unsbscribe</label>
+        <label :for="`u-${magazine.id}`">Unsubscribe</label>
       </div>
     </form>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import { useProfileStore } from '~/composables/profile';
+
 definePageMeta({
   middleware: "auth",
 });
@@ -47,16 +50,10 @@ const magazines = ref([
   { id: 9, key: "event", label: "Announcement of the Latest Release" },
 ]);
 const response = ref(null);
-const profile = ref(null);
+const { profile } = useProfileStore();
 
 const getData = async () => {
   try {
-    const profileRes = await $fetch("/rcms-api/1/profile", {
-      credentials: "include",
-      baseURL: config.public.apiBase,
-    });
-    profile.value = profileRes;
-
     response.value = await $fetch("/rcms-api/18/my_magazine/info", {
       credentials: "include",
       baseURL: config.public.apiBase,

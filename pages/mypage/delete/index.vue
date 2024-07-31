@@ -36,13 +36,15 @@ const getData = async () => {
 
 const deleteProfile = async () => {
   try {
-    await this.$axios.$post("/rcms-api/18/member/delete", {
+    await $fetch("/rcms-api/18/member/delete", {
+      method: "POST",
       baseURL: config.public.apiBase,
       credentials: "include",
       body: {},
     });
     deleteDone.value = true;
   } catch (e) {
+    // console.log(e.response);
     error.value = e.response._data.errors[0].message;
   }
 };

@@ -35,8 +35,8 @@ onMounted(() => {
     throw createError({
       statusCode: 404,
       message: "Invalid Registration Key",
-      fatal: false
-    })
+      fatal: false,
+    });
   }
 });
 
@@ -52,8 +52,8 @@ const sendOTP = async () => {
       body: payload,
     });
     sentOTP.value = true;
-  } catch (error) {
-    error.value = error.response._data.errors[0].message;
+  } catch (err) {
+    error.value = err.response._data.errors[0].message;
   }
 };
 const signup = async () => {
@@ -68,9 +68,11 @@ const signup = async () => {
       credentials: "include",
       body: payload,
     });
+    console.log("signup done");
     signupDone.value = true;
-  } catch (error) {
-    error.value = error.response._data.errors[0].message;
+  } catch (err) {
+    console.log(err.response._data.errors[0].message);
+    error.value = err.response._data.errors[0].message;
   }
 };
 </script>
