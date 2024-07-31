@@ -49,7 +49,11 @@ const login = async () => {
 //Subscribe
 const subscribeSubmit = async () => {
   try {
-    if (!currentUser.value.member_id) {
+    const profile = await $fetch("/rcms-api/1/profile", {
+      baseURL: config.public.apiBase,
+      credentials: "include",
+    });
+    if (!profile.member_id) {
       resultMessage.value = "Please Login";
       password.value = "";
     } else {
@@ -72,7 +76,11 @@ const subscribeSubmit = async () => {
 //Unsubscribe
 const unsubscribeSubmit = async () => {
   try {
-    if (!currentUser.value.member_id) {
+    const profile = await $fetch("/rcms-api/1/profile", {
+      baseURL: config.public.apiBase,
+      credentials: "include",
+    });
+    if (!profile.member_id) {
       resultMessage.value = "Please Login";
     } else {
       const payload = {
