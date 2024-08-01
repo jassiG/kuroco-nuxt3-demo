@@ -35,6 +35,7 @@ const login = async () => {
     };
     const response = await $fetch("/rcms-api/1/login", {
       method: "POST",
+      credentials: "include",
       baseURL: config.public.apiBase,
       body: payload,
     });
