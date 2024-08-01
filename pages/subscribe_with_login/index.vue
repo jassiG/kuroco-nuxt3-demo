@@ -59,7 +59,7 @@ const subscribeSubmit = async () => {
       password.value = "";
     } else {
       const payload = {
-        member_id: currentUser.value.member_id,
+        member_id: profile.member_id,
       };
       // post data
       const response = await $fetch(`/rcms-api/1/magazine_subscribe/1`, {
@@ -85,7 +85,7 @@ const unsubscribeSubmit = async () => {
       resultMessage.value = "Please Login";
     } else {
       const payload = {
-        member_id: currentUser.value.member_id,
+        member_id: profile.member_id,
       };
       // post data
       const response = await $fetch(`/rcms-api/1/magazine_unsubscribe/1`, {
