@@ -24,7 +24,6 @@ const config = useRuntimeConfig();
 const email = ref("");
 const password = ref("");
 const resultMessage = ref(null);
-const currentUser = ref({});
 
 //Login
 const login = async () => {
@@ -39,9 +38,6 @@ const login = async () => {
       baseURL: config.public.apiBase,
       body: payload,
     });
-    currentUser.value = {
-      member_id: response.member_id,
-    };
     resultMessage.value = "Successful login";
   } catch (error) {
     resultMessage.value = error.response._data.errors[0].message;
