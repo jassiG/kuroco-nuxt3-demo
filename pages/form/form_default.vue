@@ -66,17 +66,25 @@ const getForm = async () => {
   console.log(formData);
   response.value = formData;
 };
+
 const textLines2texts = (textLines = "") => {
   return textLines.split("\r\n");
 };
+
 const handleOnSubmit = async () => {
   //Post processing to Kuroco endpoints
   try {
-    await this.$axios.$post("/rcms-api/8/form", { ...this.submitData });
+    await $fetch("/rcms-api/8/form", {
+      method: "POST",
+      credentials: "include",
+      body: this.submitData || {},
+    });
     submitted.value = true;
     error.value = null;
   } catch (e) {
     error.value = e.response._data.errors;
   }
 };
+
+await getForm();
 </script>
