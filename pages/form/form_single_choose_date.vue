@@ -57,7 +57,7 @@
   </div>
 </template>
   
-<script>
+<script setup>
 const FORM_ID = 3; // Form ID
 const submitted = ref(false);
 const submitData = ref({});
