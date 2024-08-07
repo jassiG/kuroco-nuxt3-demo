@@ -59,34 +59,38 @@
   
 <script>
 const FORM_ID = 3; // Form ID
+const submitted = ref(false);
+const submitData = ref({});
+const error = ref(null);
+const response = ref({ details: {} });
 
-export default {
-  data() {
-    return {
-      submitted: false,
-      submitData: {},
-      error: null,
-    }
-  },
-  async asyncData({ $axios }) {
-    return {
-      response: await $axios.$get(`/rcms-api/8/form/${FORM_ID}`),
-    };
-  },
-  methods: {
-    textLines2texts(textLines = '') {
-      return textLines.split('\r\n');
-    },
-    async handleOnSubmit() {
-      //Post processing to Kuroco endpoints
-      try {
-        await this.$axios.$post('/rcms-api/8/form', { ...this.submitData });
-        this.submitted = true;
-        this.error = null;
-      } catch (e) {
-        this.error = e.response.data.errors;
-      }
-    }
+const getForm = async () => {
+  const formData = await $fetch(`/rcms-api/8/form/${FORM_ID}`, {
+    method: "GET",
+    credentials: "include",
+  });
+  console.log(formData);
+  response.value = formData;
+};
+
+const textLines2texts = (textLines = "") => {
+  return textLines.split("\r\n");
+};
+
+const handleOnSubmit = async () => {
+  //Post processing to Kuroco endpoints
+  try {
+    await $fetch("/rcms-api/8/form", {
+      method: "POST",
+      credentials: "include",
+      body: this.submitData || {},
+    });
+    submitted.value = true;
+    error.value = null;
+  } catch (e) {
+    error.value = e.response._data.errors;
   }
 };
+
+await getForm();
 </script>
