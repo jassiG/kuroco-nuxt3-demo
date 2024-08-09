@@ -60,53 +60,63 @@
     </section>
   </div>
 </template>
-  
-<script>
-const FORM_ID = 3; // Form ID
 
-export default {
-  data() {
-    return {
-      submitted: false,
-      submitData: {},
-      error: null,
-      file_id: null,
-    }
-  },
-  async asyncData({ $axios }) {
-    return {
-      response: await $axios.$get(`/rcms-api/8/form/${FORM_ID}`),
-    };
-  },
-  methods: {
-    textLines2texts(textLines = '') {
-      return textLines.split('\r\n');
-    },
-    //Set_file_id
-    async uploadFile(e, key) {
+<script setup>
+const FORM_ID = 3; // Form ID
+const submitted = ref(false);
+const submitData = ref({});
+const error = ref(null);
+const file_id = ref(null);
+const response = ref({ details: {} });
+
+const getForm = async () => {
+  const formData = await $fetch(`/rcms-api/8/form/${FORM_ID}`, {
+    method: "GET",
+    credentials: "include",
+  });
+  console.log(formData);
+  response.value = formData;
+};
+
+const textLines2texts = (textLines = "") => {
+  return textLines.split("\r\n");
+};
+
+//Set_file_id
+const uploadFile = async (e, key) => {
       const fm = new FormData();
       fm.append('file', e.target.files[0]);
 
-      const { file_id } = await this.$axios.$post(`/rcms-api/8/file`, fm, {
+      const res = await $fetch(`/rcms-api/8/file`, {
+        method: "POST",
+        credentials: "include",
+        body: fm,
         headers: {
-          'Content-Type': 'multipart/form-data', // required to post file as a binary
+          'Content-Type': 'multipart/form-data',
         },
       });
-      this.submitData = {
+      file_id.value = res.file_id;
+  
+      submitData.value = {
         ...this.submitData,
-        [key]: { "file_id": file_id }
+        [key]: { "file_id": file_id.value }
       }
     },
-    async handleOnSubmit() {
-      //Post processing to Kuroco endpoints
-      try {
-        await this.$axios.$post('/rcms-api/8/form', { ...this.submitData });
-        this.submitted = true;
-        this.error = null;
-      } catch (e) {
-        this.error = e.response.data.errors;
-      }
-    }
+
+const handleOnSubmit = async () => {
+  //Post processing to Kuroco endpoints
+  try {
+    await $fetch("/rcms-api/8/form", {
+      method: "POST",
+      credentials: "include",
+      body: this.submitData || {},
+    });
+    submitted.value = true;
+    error.value = null;
+  } catch (e) {
+    error.value = e.response._data.errors;
   }
 };
+
+await getForm();
 </script>
