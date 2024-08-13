@@ -1,0 +1,11 @@
+{
+  "links": {
+    "home": "Home",
+    "news": "News",
+    "en": "English",
+    "ja": "Japanese"
+  },
+  "home": {
+    "title": "front_kuroco_sample_support"
+  }
+}

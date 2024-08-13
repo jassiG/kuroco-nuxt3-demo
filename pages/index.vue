@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Index</h1>
+    <h1 class="title">{{ $t("home.title") }}</h1>
     <ul>
       <!-- link buttons -->
       <li>
