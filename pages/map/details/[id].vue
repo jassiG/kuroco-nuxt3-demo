@@ -34,7 +34,6 @@
 
 <script setup>
 const route = useRoute();
-const $axios = useNuxtApp().$axios;
 
 const gmap = ref(null);
 const mapCenter = ref({ lat: 35.66107078220203, lng: 139.7584319114685 });
@@ -43,10 +42,14 @@ const id = ref(route.params.id);
 const contents = ref({});
 const errors = ref([]);
 
-const { data } = await useAsyncData('mapDetails', async () => {
+const { data } = await useAsyncData("mapDetails", async () => {
   const url = `/rcms-api/3/map/details/${id.value}`;
   try {
-    const response = await $axios.$get(url);
+    const response = await $fetch(url, {
+      method: "GET",
+      baseURL: config.public.apiBase,
+      credentials: "include",
+    });
     if (response.details) {
       return response.details;
     }
@@ -118,7 +121,15 @@ async function update() {
     params.gmap.gmap_y = String(markPlace.value.lat);
   }
   try {
-    const response = await $axios.post("/rcms-api/3/building/update/" + route.params.id, params);
+    const response = await $fetch(
+      "/rcms-api/3/building/update/" + route.params.id,
+      {
+        method: "POST",
+        credentials: "include",
+        baseURL: config.public.apiBase,
+        body: params,
+      }
+    );
     if (response.data.errors?.length) {
       console.log(response.data.errors);
     }
