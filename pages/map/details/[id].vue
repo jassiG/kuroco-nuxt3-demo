@@ -32,105 +32,100 @@
   </div>
 </template>
 
-<script>
-export default {
-  async asyncData({ $axios, route }) {
-    const id = route.params.id;
-    const url = `/rcms-api/3/map/details/${id}`;
+<script setup>
+const route = useRoute();
+const router = useRouter();
+const $axios = useNuxtApp().$axios;
 
-    const contents = await $axios
-      .$get(url)
-      .then((response) => {
-        if (response.details) {
-          return response.details;
-        }
-        return {};
-      })
-      .catch((error) => {
-        console.log(error);
-        return {};
-      });
-    // Set the initial state of Google Maps
-    let mapCenter = { lat: 35.66107078220203, lng: 139.7584319114685 };
-    let markPlace = null;
-    if (contents.gmap?.gmap_x && contents.gmap?.gmap_y) {
-      const lat = Number(contents.gmap.gmap_y);
-      const lng = Number(contents.gmap.gmap_x);
-      mapCenter = { lat, lng };
-      markPlace = { lat, lng };
+const gmap = ref(null);
+const mapCenter = ref({ lat: 35.66107078220203, lng: 139.7584319114685 });
+const markPlace = ref(null);
+const id = ref(route.params.id);
+const contents = ref({});
+const errors = ref([]);
+
+const { data } = await useAsyncData('mapDetails', async () => {
+  const url = `/rcms-api/3/map/details/${id.value}`;
+  try {
+    const response = await $axios.$get(url);
+    if (response.details) {
+      return response.details;
     }
+    return {};
+  } catch (error) {
+    console.log(error);
+    return {};
+  }
+});
 
-    return {
-      mapCenter,
-      markPlace,
-      id,
-      contents,
-      errors: [],
+onMounted(() => {
+  contents.value = data.value;
+  if (contents.value.gmap?.gmap_x && contents.value.gmap?.gmap_y) {
+    const lat = Number(contents.value.gmap.gmap_y);
+    const lng = Number(contents.value.gmap.gmap_x);
+    mapCenter.value = { lat, lng };
+    markPlace.value = { lat, lng };
+  }
+});
+
+const gmap_zoom = computed({
+  get: () => Number(contents.value.gmap?.gmap_zoom) || 15,
+  set: (val) => {
+    if (!contents.value.gmap) contents.value.gmap = {};
+    contents.value.gmap.gmap_zoom = String(val);
+  },
+});
+
+const gmap_type = computed({
+  get: () => contents.value.gmap?.gmap_type || "roadmap",
+  set: (val) => {
+    if (!contents.value.gmap) contents.value.gmap = {};
+    contents.value.gmap.gmap_type = val;
+  },
+});
+
+function setPlace(place) {
+  if (place.geometry) {
+    markPlace.value = {
+      lat: place.geometry.location.lat(),
+      lng: place.geometry.location.lng(),
     };
-  },
-  computed: {
-    gmap_zoom: {
-      get() {
-        return Number(this.contents.gmap?.gmap_zoom) || 15;
-      },
-      set(val) {
-        this.contents.gmap.gmap_zoom = String(val);
-      },
+    if (place.geometry.viewport) {
+      gmap.value.fitBounds(place.geometry.viewport);
+    } else {
+      gmap.value.panTo(place.geometry.location);
+    }
+  }
+}
+
+function mark(event) {
+  markPlace.value = {
+    lat: event.latLng.lat(),
+    lng: event.latLng.lng(),
+  };
+}
+
+async function update() {
+  const params = {
+    gmap: {
+      gmap_x: "",
+      gmap_y: "",
+      gmap_zoom: contents.value?.gmap?.gmap_zoom || "15",
+      gmap_type: contents.value?.gmap?.gmap_type || "roadmap",
     },
-    gmap_type: {
-      get() {
-        return this.contents.gmap?.gmap_type || "roadmap";
-      },
-      set(val) {
-        this.contents.gmap.gmap_type = val;
-      },
-    },
-  },
-  methods: {
-    setPlace(place) {
-      if (place.geometry) {
-        this.markPlace = {
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-        };
-        if (place.geometry.viewport) {
-          this.$refs.gmap.fitBounds(place.geometry.viewport);
-        } else {
-          this.$refs.gmap.panTo(place.geometry.location);
-        }
-      }
-    },
-    mark(event) {
-      this.markPlace = {
-        lat: event.latLng.lat(),
-        lng: event.latLng.lng(),
-      };
-    },
-    async update() {
-      const params = {
-        gmap: {
-          gmap_x: "",
-          gmap_y: "",
-          gmap_zoom: this.contents?.gmap?.gmap_zoom || 15,
-          gmap_type: this.contents?.gmap?.gmap_type || "roadmap",
-        },
-      };
-      if (this.markPlace) {
-        params.gmap.gmap_x = String(this.markPlace.lng);
-        params.gmap.gmap_y = String(this.markPlace.lat);
-      }
-      await this.$axios
-        .post("/rcms-api/3/building/update/" + this.$route.params.id, params)
-        .then((response) => {
-          if (response.data.errors?.length) {
-            console.log(response.data.errors);
-          }
-          this.errors = [];
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-  },
-};
+  };
+  if (markPlace.value) {
+    params.gmap.gmap_x = String(markPlace.value.lng);
+    params.gmap.gmap_y = String(markPlace.value.lat);
+  }
+  try {
+    const response = await $axios.post("/rcms-api/3/building/update/" + route.params.id, params);
+    if (response.data.errors?.length) {
+      console.log(response.data.errors);
+    }
+    errors.value = [];
+  } catch (error) {
+    console.log(error);
+  }
+}
 </script>
