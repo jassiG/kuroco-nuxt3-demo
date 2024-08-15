@@ -34,7 +34,6 @@
 
 <script setup>
 const route = useRoute();
-const router = useRouter();
 const $axios = useNuxtApp().$axios;
 
 const gmap = ref(null);
