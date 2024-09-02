@@ -11,7 +11,7 @@
 const route = useRoute();
 const config = useRuntimeConfig();
 const lang = ref(useI18n().locale.value);
-console.log(lang.value);
+
 const { data: response } = await useFetch(
   `${config.public.apiBase}/rcms-api/1/newsdetail/${route.params.id}?_lang=${lang.value}`,
   {
