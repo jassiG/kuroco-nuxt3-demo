@@ -1,6 +1,5 @@
 <template>
   <div :v-if="data" class="container">
-    {{ data }}
     <h3>Map (Google Maps)</h3>
     <div>
       The position that is set changes when you click on the map. You can also
@@ -9,22 +8,23 @@
     <form id="topics_edit" @submit.prevent="update">
       <div>
         <form onsubmit="return false;">
-          <GMapAutocomplete
-            :options="{ fields: ['geometry'] }"
-            :select-first-on-enter="true"
-            @place_changed="setPlace"
-          />
           <GoogleMap
+            :api-key="key"
+            :mapId="MAP_ID"
             ref="gmap"
             :center="mapCenter"
             :zoom="gmap_zoom"
             :map-type-id="gmap_type"
             style="width: 500px; height: 300px"
             @click="mark($event)"
-            @zoom_changed="gmap_zoom = $event"
+            @zoom_changed="setZoom($event)"
             @maptypeid_changed="gmap_type = $event"
           >
-            <AdvancedMarker v-if="markPlace" :options="markerOptions" />
+            <AdvancedMarker
+              v-if="markPlace"
+              :options="markerOptions"
+              @click="mapClicked"
+            />
           </GoogleMap>
         </form>
       </div>
@@ -36,30 +36,39 @@
 <script setup>
 import { AdvancedMarker, GoogleMap } from "vue3-google-map";
 const route = useRoute();
+const config = useRuntimeConfig();
+const key = config.gcpKey;
+console.log(config);
+console.log(config.gcpKey);
+console.log(key);
 
 const gmap = ref(null);
 const mapCenter = ref({ lat: 35.66107078220203, lng: 139.7584319114685 });
-const markerOptions = { position: mapCenter, label: "L", title: "title" };
 const markPlace = ref(null);
+const markerOptions = computed(() => ({
+  position: markPlace.value ? markPlace.value : mapCenter.value,
+  draggable: true,
+}));
 const id = ref(route.params.id);
 const contents = ref({});
 const errors = ref([]);
+const MAP_ID = "DEMO_MAP_ID";
 
 const { data } = await useAsyncData("mapDetails", async () => {
-  const url = `/rcms-api/3/newsdetail/${id.value}`;
+  const url = `/rcms-api/1/newsdetail/${id.value}`;
   try {
     const response = await $fetch(url, {
       method: "GET",
       baseURL: config.public.apiBase,
       credentials: "include",
     });
-    console.log(response);
+    // console.log(response);
     if (response.details) {
       return response.details;
     }
     return {};
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return {};
   }
 });
@@ -67,9 +76,9 @@ const { data } = await useAsyncData("mapDetails", async () => {
 onMounted(() => {
   contents.value = data.value;
   if (contents.value.gmap?.gmap_x && contents.value.gmap?.gmap_y) {
-    const lat = Number(contents.value.gmap.gmap_y);
-    const lng = Number(contents.value.gmap.gmap_x);
-    console.log(lat, lng);
+    const lat = Number(contents.value.gmap.gmap_y) ? Number(contents.value.gmap.gmap_y) : 35.66107078220203;
+    const lng = Number(contents.value.gmap.gmap_x) ? Number(contents.value.gmap.gmap_x) : 139.7584319114685;
+    console.log("lattitude, longitude");
     mapCenter.value = { lat, lng };
     markPlace.value = { lat, lng };
   }
@@ -92,6 +101,7 @@ const gmap_type = computed({
 });
 
 function setPlace(place) {
+  console.log("setPlace", { place });
   if (place.geometry) {
     markPlace.value = {
       lat: place.geometry.location.lat(),
@@ -112,6 +122,14 @@ function mark(event) {
   };
 }
 
+
+function mapClicked(event) {
+  console.log('mapCLicked', { event });
+}
+function setZoom(event) {
+  console.log('setZoom', event);
+}
+
 async function update() {
   const params = {
     gmap: {
@@ -127,7 +145,7 @@ async function update() {
   }
   try {
     const response = await $fetch(
-      "/rcms-api/3/update_news/" + route.params.id,
+      "/rcms-api/1/update_news/" + route.params.id,
       {
         method: "POST",
         credentials: "include",
@@ -135,13 +153,13 @@ async function update() {
         body: params,
       }
     );
-    console.log(response);
+    // console.log(response);
     if (response.data.errors?.length) {
       console.log(response.data.errors);
     }
     errors.value = [];
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 }
 </script>

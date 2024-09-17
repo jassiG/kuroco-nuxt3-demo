@@ -30,6 +30,7 @@ export default defineNuxtConfig({
     ],
   ],
   runtimeConfig: {
+    gcpKey: '',
     // Public keys that are exposed to the client
     public: {
       apiBase: "https://hasebetest2.g.kuroco.app",
