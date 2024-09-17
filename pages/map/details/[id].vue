@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <div :v-if="data" class="container">
+    {{ data }}
     <h3>Map (Google Maps)</h3>
     <div>
       The position that is set changes when you click on the map. You can also
@@ -8,12 +9,12 @@
     <form id="topics_edit" @submit.prevent="update">
       <div>
         <form onsubmit="return false;">
-          <GmapAutocomplete
+          <GMapAutocomplete
             :options="{ fields: ['geometry'] }"
             :select-first-on-enter="true"
             @place_changed="setPlace"
           />
-          <GmapMap
+          <GoogleMap
             ref="gmap"
             :center="mapCenter"
             :zoom="gmap_zoom"
@@ -23,8 +24,8 @@
             @zoom_changed="gmap_zoom = $event"
             @maptypeid_changed="gmap_type = $event"
           >
-            <GmapMarker v-if="markPlace" :position="markPlace" />
-          </GmapMap>
+            <AdvancedMarker v-if="markPlace" :options="markerOptions" />
+          </GoogleMap>
         </form>
       </div>
       <input type="submit" value="Save" />
@@ -33,23 +34,26 @@
 </template>
 
 <script setup>
+import { AdvancedMarker, GoogleMap } from "vue3-google-map";
 const route = useRoute();
 
 const gmap = ref(null);
 const mapCenter = ref({ lat: 35.66107078220203, lng: 139.7584319114685 });
+const markerOptions = { position: mapCenter, label: "L", title: "title" };
 const markPlace = ref(null);
 const id = ref(route.params.id);
 const contents = ref({});
 const errors = ref([]);
 
 const { data } = await useAsyncData("mapDetails", async () => {
-  const url = `/rcms-api/3/map/details/${id.value}`;
+  const url = `/rcms-api/3/newsdetail/${id.value}`;
   try {
     const response = await $fetch(url, {
       method: "GET",
       baseURL: config.public.apiBase,
       credentials: "include",
     });
+    console.log(response);
     if (response.details) {
       return response.details;
     }
@@ -65,6 +69,7 @@ onMounted(() => {
   if (contents.value.gmap?.gmap_x && contents.value.gmap?.gmap_y) {
     const lat = Number(contents.value.gmap.gmap_y);
     const lng = Number(contents.value.gmap.gmap_x);
+    console.log(lat, lng);
     mapCenter.value = { lat, lng };
     markPlace.value = { lat, lng };
   }
@@ -122,7 +127,7 @@ async function update() {
   }
   try {
     const response = await $fetch(
-      "/rcms-api/3/building/update/" + route.params.id,
+      "/rcms-api/3/update_news/" + route.params.id,
       {
         method: "POST",
         credentials: "include",
@@ -130,6 +135,7 @@ async function update() {
         body: params,
       }
     );
+    console.log(response);
     if (response.data.errors?.length) {
       console.log(response.data.errors);
     }

@@ -15,7 +15,8 @@
     "nuxt": "^3.11.2",
     "nuxt-auth-utils": "^0.1.0",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "vue3-google-map": "^0.21.0"
   },
   "devDependencies": {
     "@nuxtjs/eslint-module": "^4.1.0",
