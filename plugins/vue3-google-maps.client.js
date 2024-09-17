@@ -1,9 +1,10 @@
+import { useRuntimeConfig } from "nuxt/app";
 import Vue from "vue";
 import * as VueGoogleMaps from "vue3-google-maps";
 
 Vue.use(VueGoogleMaps, {
   load: {
-    key: process.env.GCP_KEY,
+    key: useRuntimeConfig().gcpKey,
     libraries: "places",
   },
 });
