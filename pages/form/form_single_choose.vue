@@ -11,7 +11,7 @@
 
       <div v-if="submitted">
         <template v-for="line in textLines2texts(response.details.thanks_text)">
-          {{ line }}<br>
+          {{ line }}<br />
         </template>
       </div>
 
@@ -25,15 +25,21 @@
         <div>
           <dl>
             <dt>Name</dt>
-            <dd><input v-model="submitData.name" name='name' type="text"></dd>
+            <dd><input v-model="submitData.name" name="name" type="text" /></dd>
           </dl>
           <dl>
             <dt>Email</dt>
-            <dd><input v-model="submitData.from_mail" name='from_mail' type="text"></dd>
+            <dd>
+              <input
+                v-model="submitData.from_mail"
+                name="from_mail"
+                type="text"
+              />
+            </dd>
           </dl>
           <dl>
             <dt>Message</dt>
-            <dd><textarea v-model="submitData.body" name='body'></textarea></dd>
+            <dd><textarea v-model="submitData.body" name="body"></textarea></dd>
           </dl>
           <dl>
             <dt>Item</dt>
@@ -52,17 +58,19 @@
     </section>
   </div>
 </template>
-  
+
 <script setup>
-const FORM_ID = 3; // Form ID
+const FORM_ID = 21; // Form ID
 const submitted = ref(false);
 const submitData = ref({});
 const error = ref(null);
 const response = ref({ details: {} });
+const config = useRuntimeConfig();
 
 const getForm = async () => {
-  const formData = await $fetch(`/rcms-api/8/form/${FORM_ID}`, {
+  const formData = await $fetch(`/rcms-api/22/form/${FORM_ID}`, {
     method: "GET",
+    baseURL: config.public.apiBase,
     credentials: "include",
   });
   console.log(formData);
@@ -76,10 +84,11 @@ const textLines2texts = (textLines = "") => {
 const handleOnSubmit = async () => {
   //Post processing to Kuroco endpoints
   try {
-    await $fetch("/rcms-api/8/form", {
+    await $fetch("/rcms-api/22/form", {
       method: "POST",
+      baseURL: config.public.apiBase,
       credentials: "include",
-      body: this.submitData || {},
+      body: submitData.value || {},
     });
     submitted.value = true;
     error.value = null;
