@@ -4,8 +4,10 @@
       <h1>{{ response.details.inquiry_name }}</h1>
 
       <div>
-        <template v-for="line in textLines2texts(response.details.inquiry_info)">
-          {{ line }}<br>
+        <template
+          v-for="line in textLines2texts(response.details.inquiry_info)"
+        >
+          {{ line }}<br />
         </template>
       </div>
 
@@ -44,9 +46,16 @@
           <dl>
             <dt>Item</dt>
             <dd>
-              <select v-model="submitData.ext_01" name='ext_01'>
-                <option v-for="option in response.details.cols.ext_01.options" :key="option.key" :label=option.value :value=option.key>
-                  {{ option.value }}
+              <select v-model="submitData.ext_01" name="ext_01">
+                <option
+                  v-for="(key, value) in response.details.cols.filter(
+                    (col) => col.key === 'ext_01'
+                  )[0].options"
+                  :key="key"
+                  :label="value"
+                  :value="key"
+                >
+                  {{ key }}:{{ value }}
                 </option>
               </select>
             </dd>
