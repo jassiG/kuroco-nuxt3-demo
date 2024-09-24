@@ -48,12 +48,14 @@
             <dd>
               <select v-model="submitData.ext_01" name="ext_01">
                 <option
-                  v-for="option in response.details.cols.ext_01.options"
-                  :key="option.key"
-                  :label="option.value"
-                  :value="option.key"
+                  v-for="(value, key) in response.details.cols.filter(
+                    (col) => col.key === 'ext_01'
+                  )[0].options"
+                  :key="key"
+                  :label="value"
+                  :value="key"
                 >
-                  {{ option.value }}
+                  {{ key }}:{{ value }}
                 </option>
               </select>
             </dd>
