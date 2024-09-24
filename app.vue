@@ -5,6 +5,13 @@
     </NuxtLayout>
   </div>
 </template>
+<script setup>
+useHead({
+  script: [
+        { src: "https://player.vimeo.com/api/player.js", body: true },
+    ],
+});
+</script>
 <style>
 /* a {
   color: #007bff;

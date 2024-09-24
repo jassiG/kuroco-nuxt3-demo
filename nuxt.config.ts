@@ -7,6 +7,9 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
+  plugins: [
+    '@/plugins/vue3-google-maps.client'
+  ],
   modules: [
     [
       "@nuxtjs/i18n",
@@ -27,6 +30,7 @@ export default defineNuxtConfig({
     ],
   ],
   runtimeConfig: {
+    gcpKey: '',
     // Public keys that are exposed to the client
     public: {
       apiBase: "https://hasebetest2.g.kuroco.app",
