@@ -48,7 +48,7 @@
             <dd>
               <select v-model="submitData.ext_01" name="ext_01">
                 <option
-                  v-for="(key, value) in response.details.cols.filter(
+                  v-for="(value, key) in response.details.cols.filter(
                     (col) => col.key === 'ext_01'
                   )[0].options"
                   :key="key"
