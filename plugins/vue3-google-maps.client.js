@@ -5,6 +5,6 @@ import * as VueGoogleMaps from "vue3-google-maps";
 Vue.use(VueGoogleMaps, {
   load: {
     key: useRuntimeConfig().gcpKey,
-    libraries: "places",
+    libraries: "places,marker",
   },
 });
